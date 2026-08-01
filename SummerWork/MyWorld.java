@@ -2,6 +2,11 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 /**
  * Write a description of class MyWorld here.
@@ -39,6 +44,7 @@ public class MyWorld extends World
         }
         showText("you have learned "+learned+" out of "+total+" cards", 200, 350);
     }
+    
     /**
      * Prepare the world for the start of the program.
      * That is: create the initial objects and add them to the world.
@@ -48,7 +54,6 @@ public class MyWorld extends World
         NewFlashcard newFlashcard = new NewFlashcard();
         addObject(newFlashcard,171,178);
 
-        
         askFlashcard askFlashcard = new askFlashcard();
         addObject(askFlashcard,361,282);
         showAnswer showAnswer = new showAnswer();
@@ -58,6 +63,13 @@ public class MyWorld extends World
         addObject(correctButton,516,228);
         incorectButton incorectButton = new incorectButton();
         addObject(incorectButton,521,303);
+        importButton importButton = new importButton();
+        addObject(importButton,278,198);
+        exportButton exportButton = new exportButton();
+        addObject(exportButton,347,194);
+        exportButton.setLocation(212,201);
+        importButton.setLocation(370,204);
+        exportButton.setLocation(295,196);
     }
 
     public void addFlashcard(String front, String back){
@@ -70,7 +82,7 @@ public class MyWorld extends World
         showText("",400,50);
     }
     public void showQuestion(){
-        System.out.println("should ask new flashcard");
+        System.out.println("should ask new flashcard" + flashcards.get(question)[0]);
         if (flashcards.size() != 0){
             showText(flashcards.get(question)[0],100,50);
         }
@@ -80,7 +92,7 @@ public class MyWorld extends World
             
     }
     public void showAnswer(){
-        System.out.println("give answer");
+        System.out.println("give answer" + flashcards.get(question)[1]);
         if (flashcards.size() != 0){
             showText(flashcards.get(question)[1],400,50);
         }
@@ -113,6 +125,53 @@ public class MyWorld extends World
         
         if (inputValue1 != null && inputValue2 != null){
             addFlashcard(inputValue1,inputValue2);
+        }
+    }
+    public void importbuttonpressed(){
+        try{
+            File Obj = new File("test.txt");
+            Scanner Reader = new Scanner(Obj);
+            List<String> importedData = new ArrayList<String>();
+            while (Reader.hasNextLine()){
+                String data = Reader.nextLine();
+                importedData.add(data);
+            }
+            flashcards = new ArrayList<String[]>();
+            String[] oneDataGroup = new String[4];
+            int x = 0;
+            for (int i = 0; i < importedData.size();i++){
+                oneDataGroup[x] = importedData.get(i);
+                x++;
+                if (x == 4){
+                    x = 0;
+                    flashcards.add(oneDataGroup);
+                    oneDataGroup = new String[4];
+                }
+            }
+            Reader.close();
+        }
+        catch(FileNotFoundException e){}
+        for (int f = 0; f < flashcards.size(); f++){
+                for (int i = 0; i < 4; i++){
+                    System.out.println(flashcards.get(f)[i] + "\n");
+                }
+            }
+        }
+    
+    public void exportbuttonpressed(){
+        File Obj = new File("test.txt");
+        try{
+            FileWriter writer = new FileWriter("test.txt");
+            for (int f = 0; f < flashcards.size(); f++){
+                for (int i = 0; i < 4; i++){
+                    writer.write(flashcards.get(f)[i] + "\n");
+                }
+                         
+            }
+            writer.close();
+        }
+        catch (IOException e){
+             
         }
     }
 }
